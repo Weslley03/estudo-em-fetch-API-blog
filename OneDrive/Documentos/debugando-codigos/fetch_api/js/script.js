@@ -6,6 +6,10 @@ const postPage = document.querySelector('#post')
 const postContainer = document.querySelector('#post-container');
 const commentContainer = document.querySelector('#comment-form') 
 
+const commentForm = document.querySelector('#comment-form');
+const emailInput = document.querySelector('#email')
+const bodyInput = document.querySelector('#body');
+
 //get id from URL7
 const urlSearchParams = new URLSearchParams(window.location.search);
 const postId = urlSearchParams.get("id") 
@@ -18,7 +22,7 @@ async function getAllPosts() {
     $loadingElement.classList.add('hide');
 
     data.map((post) => {
-        const div = document.createElement('div');
+        const divP = document.createElement('div');
         const title =  document.createElement('h2');
         const body =  document.createElement('p');
         const link =  document.createElement('a');
@@ -28,11 +32,11 @@ async function getAllPosts() {
         link.innerText = 'ler'
         link.setAttribute('href', `/post.html?id=${post.id}`);
     
-        div.appendChild(title)
-        div.appendChild(body)
-        div.appendChild(link)
+        divP.appendChild(title)
+        divP.appendChild(body)
+        divP.appendChild(link)
 
-        $postsContainer.appendChild(div)
+        $postsContainer.appendChild(divP)
     })
 }
 
@@ -58,10 +62,56 @@ async function getPost(id) {
 
     postContainer.appendChild(title)
     postContainer.appendChild(body)
+
+    dataComment.map((comment) => {
+        createComment(comment)
+    })
 }
+
+function createComment(comment) {
+    const div = document.createElement('div');
+    const email = document.createElement('h3');
+    const commentBody = document.createElement('p');
+    
+    email.innerText = comment.email
+    commentBody.innerText = comment.body
+
+    div.appendChild(email)
+    div.appendChild(commentBody)
+    
+    commentContainer.appendChild(div)
+}
+
+async function postComment(comment) {
+    const response = await fetch(`${url}/${postId}/comments`, {
+        method: 'POST',
+        body: comment,
+        headers: {
+            'Content-type': 'application/json'
+        }
+    }) 
+    const data = await response.json() 
+    createComment(data)
+}
+
 
 if (!postId) {
     getAllPosts();
 } else {
     getPost(postId)
+
+    //add event comment to form
+    commentForm.addEventListener('submit', (e) => {
+        e.preventDefault()
+
+        let comment = {
+            email: emailInput.value,
+            body : bodyInput.value 
+        }
+        comment = JSON.stringify(comment);
+
+        postComment(comment);
+    })
 }
+
+
