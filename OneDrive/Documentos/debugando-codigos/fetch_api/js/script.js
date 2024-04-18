@@ -1,4 +1,4 @@
-const url = 'https://jsonplaceholder.typicode.com/posts' ,
+const url = 'https://jsonplaceholder.typicode.com/posts' , //determina url da nossa api
 $loadingElement = document.querySelector('#loading') , 
 $postsContainer = document.querySelector('#posts-container');
 
@@ -11,28 +11,29 @@ const emailInput = document.querySelector('#email')
 const bodyInput = document.querySelector('#body');
 
 //get id from URL7
-const urlSearchParams = new URLSearchParams(window.location.search);
-const postId = urlSearchParams.get("id") 
+const usp = new URLSearchParams(window.location.search); //cria um objetico, com determinados parametros de consulta, nesse caso 'window.location' (URL ATUAL).search retonar a parte da url que possui os paramtros de consulto, após o ?
+const postId = usp.get("id") //utilizado metodo .GET dos objetos URLSearchParams, aparitr do ?, caso tenho um parametro intitulado ID, será armazenado valor na conts
 
 //get all posts
-async function getAllPosts() {
-    const response = await fetch(url);
-    const data = await response.json();
+async function getAllPosts() { //declarado uma função assincrona
+    const response = await fetch(url); //a resposta do fetch vai ser armazenada no response, caso não tivesse o await, a varialve response receberia Promisse como valor, e os demais codigos não iria funcionar como deveria, await trava essa linha até a resposta da requisição chegar
+    const data = await response.json(); //a variavel DATA passa a ser a response, porém convertida de json para objeto
+    console.log(data)
 
-    $loadingElement.classList.add('hide');
+    $loadingElement.classList.add('hide'); //no css a gente criou uma classe com o nome HIDE, adicioanmos o $loadingElement a essa classe, a classe está comodisplay: none;, resumindo, deixamos o loadingElement inviisivel
 
-    data.map((post) => {
+    data.map((post) => { //o .map executa o código em cada item do array
         const divP = document.createElement('div');
         const title =  document.createElement('h2');
         const body =  document.createElement('p');
         const link =  document.createElement('a');
 
-        title.innerText = post.title
-        body.innerText = post.body
+        title.innerText = post.title //pegando o title do post em cada array e passando para title criado acima
+        body.innerText = post.body //pegando o body do post em cada array e passando para title criado acima
         link.innerText = 'ler'
         link.setAttribute('href', `/post.html?id=${post.id}`);
     
-        divP.appendChild(title)
+        divP.appendChild(title) //aqui, se acressenta os dados
         divP.appendChild(body)
         divP.appendChild(link)
 
@@ -50,13 +51,11 @@ async function getPost(id) {
     const dataComment = await responseComment.json()
 
     $loadingElement.classList.add('hide')
-    postPage.classList.remove('hide')
+    postPage.classList.remove('hide') //deixa visivel
 
     const title =  document.createElement('h1');
     const body =  document.createElement('p');
-
-
-
+    
     title.innerText = dataPost.title
     body.innerText = dataPost.body
 
